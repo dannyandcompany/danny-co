@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /*
+   * Design tokens as RGB channel triplets so Tailwind's `/<alpha>` opacity
+   * modifiers work (e.g. bg-accent/30). `:root` = light (default). Each
+   * additional theme is a class on <html>: `.dark`, `.theme-brand`, ...
+   * No component hardcodes a color — they only read these tokens.
+   */
+  :root {
+    /* Primitives — theme-agnostic */
+    --radius: 0.625rem;
+
+    /* Status — semantic, shared across themes */
+    --success: 22 163 74;
+    --success-foreground: 255 255 255;
+    --warning: 217 119 6;
+    --warning-foreground: 255 255 255;
+    --danger: 220 38 38;
+    --danger-foreground: 255 255 255;
+
+    /* Surfaces */
+    --background: 255 255 255;
+    --surface: 250 250 250;
+    --elevated: 244 244 245;
+    --border: 228 228 231;
+
+    /* Text */
+    --foreground: 10 10 11;
+    --muted: 82 82 91;
+    --subtle: 113 113 122;
+
+    /* Brand */
+    --primary: 10 10 11;
+    --primary-foreground: 255 255 255;
+    --secondary: 244 244 245;
+    --secondary-foreground: 24 24 27;
+    --accent: 99 102 241;
+    --accent-hover: 79 70 229;
+    --accent-foreground: 255 255 255;
+    --accent-subtle: 238 242 255;
+
+    /* Elevation + gradients */
+    --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.06),
+      0 1px 3px rgba(16, 24, 40, 0.1);
+    --shadow-glow: 0 0 0 1px rgba(99, 102, 241, 0.25),
+      0 12px 32px rgba(99, 102, 241, 0.18);
+    --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --gradient-fade: radial-gradient(
+      circle at 50% 0%,
+      rgba(99, 102, 241, 0.08),
+      transparent 60%
+    );
+
+    color-scheme: light;
+  }
+
+  .dark {
+    --background: 10 10 11;
+    --surface: 17 17 19;
+    --elevated: 24 24 27;
+    --border: 38 38 43;
+
+    --foreground: 250 250 250;
+    --muted: 161 161 170;
+    --subtle: 113 113 122;
+
+    --primary: 255 255 255;
+    --primary-foreground: 10 10 11;
+    --secondary: 39 39 42;
+    --secondary-foreground: 250 250 250;
+    --accent: 99 102 241;
+    --accent-hover: 79 70 229;
+    --accent-foreground: 255 255 255;
+    --accent-subtle: 30 27 58;
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 0 1px rgba(99, 102, 241, 0.3),
+      0 8px 32px rgba(99, 102, 241, 0.15);
+
+    color-scheme: dark;
+  }
+
+  /* Example extensible brand theme: violet midnight + emerald signature. */
+  .theme-brand {
+    --background: 13 12 28;
+    --surface: 22 20 43;
+    --elevated: 32 29 58;
+    --border: 48 44 82;
+
+    --foreground: 245 243 255;
+    --muted: 167 162 199;
+    --subtle: 120 116 150;
+
+    --primary: 255 255 255;
+    --primary-foreground: 13 12 28;
+    --secondary: 32 29 58;
+    --secondary-foreground: 245 243 255;
+    --accent: 16 185 129;
+    --accent-hover: 5 150 105;
+    --accent-foreground: 4 22 15;
+    --accent-subtle: 6 40 30;
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 0 1px rgba(16, 185, 129, 0.35),
+      0 12px 32px rgba(16, 185, 129, 0.18);
+    --gradient-accent: linear-gradient(135deg, #10b981 0%, #6366f1 100%);
+    --gradient-fade: radial-gradient(
+      circle at 50% 0%,
+      rgba(16, 185, 129, 0.1),
+      transparent 60%
+    );
+
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor targets so they clear the sticky header */
+    scroll-padding-top: 5rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    text-rendering: optimizeLegibility;
+    /* Remove the grey tap flash on mobile */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-foreground;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight text-foreground;
+  }
+
+  /*
+   * Color transitions run ONLY while `.theme-transition` is on <html> — added
+   * by the provider for 300ms during a switch. Keeps theme toggling smooth
+   * without animating colors on first paint or fighting per-element hovers.
+   */
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+      color 0.3s ease, fill 0.3s ease !important;
+  }
+
+  /* Accessibility + perf: honour reduced-motion globally */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Animated underline micro-interaction for nav links */
+  .nav-link {
+    @apply relative text-sm text-muted transition-colors duration-200 hover:text-foreground;
+  }
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 h-px w-0 bg-accent transition-all duration-300 ease-out;
+  }
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+}

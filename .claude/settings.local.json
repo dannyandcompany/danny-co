@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(npm list *)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/next/package.json'\\).version\\)\")",
+      "Bash(powershell.exe -Command \"npm run dev\")",
+      "PowerShell(npm run type-check)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm run *)"
+    ]
+  }
+}
