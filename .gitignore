@@ -2,8 +2,7 @@
 node_modules
 /.pnp
 .pnp.js
-yarn.lock
-package-lock.json
+# NOTE: lockfile (package-lock.json) is committed for reproducible Vercel builds
 
 # Testing
 /coverage
