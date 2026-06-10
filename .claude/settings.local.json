@@ -7,7 +7,16 @@
       "Bash(powershell.exe -Command \"npm run dev\")",
       "PowerShell(npm run type-check)",
       "mcp__Claude_Preview__preview_start",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npm -v)",
+      "Bash(npm install *)",
+      "Bash(npm audit *)",
+      "Bash(git check-ignore *)",
+      "Bash(node -e \"const m=require\\('./.next/server/middleware-manifest.json'\\); const k=Object.keys\\(m.middleware||{}\\); console.log\\('middleware entries:', k.length? k: 'NONE'\\); if\\(k.length\\){console.log\\('matchers:', JSON.stringify\\(m.middleware[k[0]].matchers\\)\\)}\")",
+      "Bash(git mv *)",
+      "PowerShell($g = Get-Command gh -ErrorAction SilentlyContinue; if \\($g\\) { Write-Output \"FOUND: $\\($g.Source\\)\"; gh --version } else { Write-Output \"gh not in PATH\"; foreach \\($p in @\\(\"$env:ProgramFiles\\\\GitHub CLI\\\\gh.exe\", \"${env:ProgramFiles\\(x86\\)}\\\\GitHub CLI\\\\gh.exe\", \"$env:LOCALAPPDATA\\\\Programs\\\\GitHub CLI\\\\gh.exe\"\\)\\) { if \\(Test-Path $p\\) { Write-Output \"EXISTS: $p\" } } })",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
