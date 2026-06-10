@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { headers } from 'next/headers';
 import { Header } from '@/components/header/Header';
 import { Footer } from '@/components/footer/Footer';
 import { ThemeProvider } from '@/components/theme';
-import { site } from '@/config/site';
+import { getBrandBySlug } from '@/config/brands';
 import './globals.css';
 
 const inter = Inter({
@@ -18,43 +19,48 @@ const mono = JetBrains_Mono({
   display: 'swap',
 });
 
-const titleDefault = `${site.name} — ${site.tagline}`;
+// Brand is resolved per request from the hostname (middleware sets `x-brand`),
+// so every domain gets its own title, canonical URL, and Open Graph identity.
+export async function generateMetadata(): Promise<Metadata> {
+  const brand = getBrandBySlug((await headers()).get('x-brand'));
+  const titleDefault = `${brand.name} — ${brand.tagline}`;
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: {
-    default: titleDefault,
-    template: `%s · ${site.name}`,
-  },
-  description: site.description,
-  keywords: [
-    'digital product studio',
-    'product design',
-    'web development',
-    'startup agency',
-    'Next.js development',
-  ],
-  authors: [{ name: site.name }],
-  creator: site.name,
-  alternates: { canonical: '/' },
-  openGraph: {
-    type: 'website',
-    url: site.url,
-    siteName: site.name,
-    title: titleDefault,
-    description: site.description,
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: site.name,
-    description: site.description,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
-  },
-};
+  return {
+    metadataBase: new URL(brand.url),
+    title: {
+      default: titleDefault,
+      template: `%s · ${brand.name}`,
+    },
+    description: brand.description,
+    keywords: [
+      'digital product studio',
+      'product design',
+      'web development',
+      'startup agency',
+      'Next.js development',
+    ],
+    authors: [{ name: brand.name }],
+    creator: brand.name,
+    alternates: { canonical: '/' },
+    openGraph: {
+      type: 'website',
+      url: brand.url,
+      siteName: brand.name,
+      title: titleDefault,
+      description: brand.description,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: brand.name,
+      description: brand.description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [
@@ -67,22 +73,24 @@ export const viewport: Viewport = {
 // theme. Mirrors ThemeProvider; keep storage key ('theme') + classes in sync.
 const noFlickerScript = `(function(){try{var t=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var r=(t==='light'||t==='dark'||t==='brand')?t:(d?'dark':'light');var c=document.documentElement.classList;c.remove('dark','theme-brand');if(r==='dark')c.add('dark');else if(r==='brand')c.add('theme-brand');}catch(e){}})();`;
 
-// Organization structured data — enables rich results in search.
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: site.name,
-  description: site.description,
-  url: site.url,
-  email: site.email,
-  sameAs: site.socials.map((s) => s.href),
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const brand = getBrandBySlug((await headers()).get('x-brand'));
+
+  // Organization structured data — enables rich results in search.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: brand.name,
+    description: brand.description,
+    url: brand.url,
+    email: brand.email,
+    sameAs: brand.socials.map((s) => s.href),
+  };
+
   return (
     <html
       lang="en"
@@ -98,9 +106,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeProvider>
-          <Header />
+          <Header brand={brand} />
           <main>{children}</main>
-          <Footer />
+          <Footer brand={brand} />
         </ThemeProvider>
       </body>
     </html>
