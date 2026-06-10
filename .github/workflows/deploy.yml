@@ -1,0 +1,45 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never run two production deploys at once; newer push cancels the older run.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+env:
+  # Required so the Vercel CLI links the project non-interactively in CI.
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  build-and-deploy:
+    name: Build (gate) → Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20 (+ npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm # caches ~/.npm keyed by package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # MANDATORY GATE: a failed build stops the job, so deploy never runs.
+      - name: Build
+        run: npm run build
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel (production)
+        run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}

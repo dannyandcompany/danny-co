@@ -3,20 +3,20 @@
 import { useState } from 'react';
 import { Button, Container } from '@/components/ui';
 import { ThemeToggle } from '@/components/theme';
-import { site } from '@/config/site';
+import type { Brand } from '@/config/brands';
 
-export function Header() {
+export function Header({ brand }: { brand: Brand }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
       <Container as="nav" className="flex h-16 items-center justify-between">
         <a href="#" className="text-base font-semibold tracking-tight">
-          {site.name}.
+          {brand.name}.
         </a>
 
         <div className="hidden items-center gap-8 md:flex">
-          {site.nav.map((link) => (
+          {brand.nav.map((link) => (
             <a key={link.href} href={link.href} className="nav-link">
               {link.label}
             </a>
@@ -25,7 +25,7 @@ export function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           <ThemeToggle />
-          <Button variant="cta" size="sm" href={site.bookingUrl}>
+          <Button variant="cta" size="sm" href={brand.bookingUrl}>
             Book a call
           </Button>
         </div>
@@ -53,7 +53,7 @@ export function Header() {
       {isOpen && (
         <div className="border-t border-border bg-surface md:hidden">
           <Container as="nav" className="flex flex-col gap-1 py-4">
-            {site.nav.map((link) => (
+            {brand.nav.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
@@ -67,7 +67,7 @@ export function Header() {
             <Button
               variant="cta"
               size="md"
-              href={site.bookingUrl}
+              href={brand.bookingUrl}
               className="mt-3 w-full"
               onClick={() => setIsOpen(false)}
             >
